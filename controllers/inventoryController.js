@@ -1,42 +1,44 @@
+const inventoryCache = require('../models/inventoryModel');
+const sendResponse = require('../utils/responseHandler');
+//model is (class blue print) for inventory
+//cache for storing inventory items
 
-const inventoryService = require('../services/inventoryService');
+exports.getSingleItem = (req, res) => {
+  const id = req.params.id;
+  const item = inventoryCache.get(id);
+  if (!item) {
+    return sendResponse(res, 404, "Item not found", {});
+  }
+  return sendResponse(res, 200, "Item fetched successfully", item);
+};
 
 exports.createItem = (req, res) => {
   const { name, quantity } = req.body;
-  try {
-    const result = inventoryService.createItem(name, quantity);
-    res.json(result);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
+  const id = Date.now().toString();
+  inventoryCache.set(id, { id, name, quantity });
+  sendResponse(res, 201, "Item created", { id, name, quantity });
 };
 
 exports.getItems = (req, res) => {
-  try {
-    const result = inventoryService.getItems();
-    res.json(result);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
+  const items = Array.from(inventoryCache.values());
+  sendResponse(res, 200, "Items fetched successfully", items);
 };
 
 exports.updateItem = (req, res) => {
   const { id } = req.params;
   const { name, quantity } = req.body;
-  try {
-    const result = inventoryService.updateItem(id, name, quantity);
-    res.json(result);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
+  if (!inventoryCache.has(id)) {
+    return sendResponse(res, 404, "Item not found", {});
   }
+  inventoryCache.set(id, { id, name, quantity });
+  sendResponse(res, 200, "Item updated", { id, name, quantity });
 };
 
 exports.deleteItem = (req, res) => {
   const { id } = req.params;
-  try {
-    const result = inventoryService.deleteItem(id);
-    res.json(result);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
+  if (!inventoryCache.has(id)) {
+    return sendResponse(res, 404, "Item not found", {});
   }
+  inventoryCache.delete(id);
+  sendResponse(res, 200, "Item deleted", {});
 };

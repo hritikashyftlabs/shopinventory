@@ -1,4 +1,3 @@
-
 const express = require('express');
 const router = express.Router();
 const inventoryController = require('../controllers/inventoryController');
@@ -11,5 +10,6 @@ router.post('/', authMiddleware, verifyAdmin, inventoryController.createItem);
 router.put('/:id', authMiddleware, verifyAdmin, inventoryController.updateItem);
 router.delete('/:id', authMiddleware, verifyAdmin, inventoryController.deleteItem);
 router.get('/', authMiddleware, inventoryController.getItems);
+router.get('/:id', authMiddleware, inventoryController.getSingleItem);
 
 module.exports = router;
