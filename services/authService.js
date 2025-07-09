@@ -1,4 +1,4 @@
-// authService.js
+
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const users = require('../cache/userCache');

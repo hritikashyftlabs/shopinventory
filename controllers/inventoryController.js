@@ -1,4 +1,4 @@
-// inventoryController.js
+
 const inventoryService = require('../services/inventoryService');
 
 exports.createItem = (req, res) => {
