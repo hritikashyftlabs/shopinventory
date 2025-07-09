@@ -14,5 +14,5 @@ app.use('/api/auth', authRoutes);
 const inventoryRoutes = require('./routes/inventoryRoutes');
 app.use('/api/inventory', inventoryRoutes);
 
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 6000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
