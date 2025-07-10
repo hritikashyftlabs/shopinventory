@@ -1,7 +1,5 @@
 const inventoryCache = require('../models/inventoryModel');
 const sendResponse = require('../utils/responseHandler');
-//model is (class blue print) for inventory
-//cache for storing inventory items
 
 exports.getSingleItem = (req, res) => {
   const id = req.params.id;
@@ -9,7 +7,7 @@ exports.getSingleItem = (req, res) => {
   if (!item) {
     return sendResponse(res, 404, "Item not found", {});
   }
-  return sendResponse(res, 200, "Item fetched successfully", item);
+  sendResponse(res, 200, "Item fetched successfully", item);
 };
 
 exports.createItem = (req, res) => {
@@ -21,7 +19,13 @@ exports.createItem = (req, res) => {
 
 exports.getItems = (req, res) => {
   const items = Array.from(inventoryCache.values());
-  sendResponse(res, 200, "Items fetched successfully", items);
+  const totalRecords = items.length;
+  const columnCount = totalRecords > 0 ? Object.keys(items[0]).length : 0;
+  sendResponse(res, 200, "Items fetched successfully", {
+    totalRecords,
+    columnCount,
+    items,
+  });
 };
 
 exports.updateItem = (req, res) => {
