@@ -1,4 +1,4 @@
-const inventoryCache = require('../models/inventoryModel');
+const Inventory = require('../models/inventoryModel');
 const sendResponse = require('../utils/responseHandler');
 
 exports.getSingleItem = (req, res) => {
@@ -7,42 +7,32 @@ exports.getSingleItem = (req, res) => {
   if (!item) {
     return sendResponse(res, 404, "Item not found", {});
   }
-  sendResponse(res, 200, "Item fetched successfully", item);
+  return sendResponse(res, 200, "Item fetched successfully", item);
 };
 
-exports.createItem = (req, res) => {
+exports.createItem = async (req, res) => {
   const { name, quantity } = req.body;
-  const id = Date.now().toString();
-  inventoryCache.set(id, { id, name, quantity });
-  sendResponse(res, 201, "Item created", { id, name, quantity });
+  const item = await Inventory.createItem(name, quantity);
+  res.status(201).json({ status: 201, message: 'Item created', data: item });
 };
 
 exports.getItems = (req, res) => {
   const items = Array.from(inventoryCache.values());
-  const totalRecords = items.length;
-  const columnCount = totalRecords > 0 ? Object.keys(items[0]).length : 0;
-  sendResponse(res, 200, "Items fetched successfully", {
-    totalRecords,
-    columnCount,
-    items,
-  });
+  sendResponse(res, 200, "Items fetched successfully", items);
 };
 
-exports.updateItem = (req, res) => {
+exports.updateItem = async (req, res) => {
   const { id } = req.params;
   const { name, quantity } = req.body;
-  if (!inventoryCache.has(id)) {
-    return sendResponse(res, 404, "Item not found", {});
+  const item = await Inventory.updateItem(id, name, quantity);
+  if (!item) {
+    return res.status(404).json({ status: 404, message: 'Item not found', data: {} });
   }
-  inventoryCache.set(id, { id, name, quantity });
-  sendResponse(res, 200, "Item updated", { id, name, quantity });
+  res.status(200).json({ status: 200, message: 'Item updated', data: item });
 };
 
-exports.deleteItem = (req, res) => {
+exports.deleteItem = async (req, res) => {
   const { id } = req.params;
-  if (!inventoryCache.has(id)) {
-    return sendResponse(res, 404, "Item not found", {});
-  }
-  inventoryCache.delete(id);
-  sendResponse(res, 200, "Item deleted", {});
+  await Inventory.deleteItem(id);
+  res.status(200).json({ status: 200, message: 'Item deleted', data: {} });
 };

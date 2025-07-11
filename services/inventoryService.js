@@ -1,4 +1,4 @@
-
+// inventoryService.js
 const inventoryItems = require('../cache/inventoryCache');
 
 exports.createItem = (name, quantity) => {
