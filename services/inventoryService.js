@@ -29,3 +29,4 @@ exports.deleteItem = async (id) => {
   await inventoryModel.deleteItem(id);
   return { message: 'Item deleted' };
 };
+
