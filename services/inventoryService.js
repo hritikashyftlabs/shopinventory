@@ -1,37 +1,31 @@
-const db = require('../config/db');
+const inventoryModel = require('../models/inventoryModel');
 
 exports.createItem = async (name, quantity) => {
-  const result = await db.query(
-    'INSERT INTO inventory (name, quantity) VALUES ($1, $2) RETURNING id',
-    [name, quantity]
-  );
-  return { message: 'Item added', id: result.rows[0].id };
+  const item = await inventoryModel.createItem(name, quantity);
+  return { message: 'Item added', id: item.id };
 };
 
 exports.getItems = async () => {
-  const result = await db.query('SELECT * FROM inventory');
-  return result.rows;
+  return await inventoryModel.getItems();
+};
+
+exports.getItemById = async (id) => {
+  const item = await inventoryModel.getItemById(id);
+  if (!item) {
+    throw new Error('Item not found');
+  }
+  return item;
 };
 
 exports.updateItem = async (id, name, quantity) => {
-  const result = await db.query(
-    'UPDATE inventory SET name = $1, quantity = $2 WHERE id = $3 RETURNING *',
-    [name, quantity, id]
-  );
-  
-  if (result.rowCount === 0) {
+  const item = await inventoryModel.updateItem(id, name, quantity);
+  if (!item) {
     throw new Error('Item not found');
   }
-  
   return { message: 'Item updated' };
 };
 
 exports.deleteItem = async (id) => {
-  const result = await db.query('DELETE FROM inventory WHERE id = $1', [id]);
-  
-  if (result.rowCount === 0) {
-    throw new Error('Item not found');
-  }
-  
+  await inventoryModel.deleteItem(id);
   return { message: 'Item deleted' };
 };
