@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const inventoryController = require('../controllers/inventoryController');
 const authMiddleware = require('../middlewares/authMiddleware');
+// const { verifyAdmin } = require('../middlewares/authMiddleware');
 
 // Apply authentication middleware to all inventory routes
 router.use(authMiddleware);
