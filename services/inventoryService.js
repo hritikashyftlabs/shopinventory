@@ -1,8 +1,9 @@
 const inventoryModel = require('../models/inventoryModel');
+const messages = require('../constants/messages');
 
 exports.createItem = async (name, quantity) => {
   const item = await inventoryModel.createItem(name, quantity);
-  return { message: 'Item added', id: item.id };
+  return { message: messages.ITEM_ADDED, id: item.id };
 };
 
 exports.getItems = async () => {
@@ -12,7 +13,7 @@ exports.getItems = async () => {
 exports.getItemById = async (id) => {
   const item = await inventoryModel.getItemById(id);
   if (!item) {
-    throw new Error('Item not found');
+    throw new Error(messages.ITEM_NOT_FOUND);
   }
   return item;
 };
@@ -20,12 +21,12 @@ exports.getItemById = async (id) => {
 exports.updateItem = async (id, name, quantity) => {
   const item = await inventoryModel.updateItem(id, name, quantity);
   if (!item) {
-    throw new Error('Item not found');
+    throw new Error(messages.ITEM_NOT_FOUND);
   }
-  return { message: 'Item updated' };
+  return { message: messages.ITEM_UPDATED };
 };
 
 exports.deleteItem = async (id) => {
   await inventoryModel.deleteItem(id);
-  return { message: 'Item deleted' };
+  return { message: messages.ITEM_DELETED };
 };

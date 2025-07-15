@@ -16,11 +16,11 @@ class Database {
       database: process.env.DB_NAME,
       password: process.env.DB_PASSWORD,
       port: process.env.DBð_PORT,
-      ssl: {
-        rejectUnauthorized: true,
-        mode: process.env.DB_SSL_MODE,
-        channelBinding: process.env.DB_CHANNEL_BINDING
-      }
+      // ssl: {
+      //   rejectUnauthorized: true,
+      //   mode: process.env.DB_SSL_MODE,
+      //   channelBinding: process.env.DB_CHANNEL_BINDING
+      // }
     });
 
     this.pool.on('connect', () => {
