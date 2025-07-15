@@ -20,6 +20,26 @@ CREATE TABLE IF NOT EXISTS inventory (
   updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
+-- Create orders table
+CREATE TABLE IF NOT EXISTS orders (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  total_amount DECIMAL(10,2) NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'pending',
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- Create order_items table
+CREATE TABLE IF NOT EXISTS order_items (
+  id SERIAL PRIMARY KEY,
+  order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+  inventory_id INTEGER NOT NULL REFERENCES inventory(id) ON DELETE CASCADE,
+  quantity INTEGER NOT NULL,
+  price DECIMAL(10,2) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
 -- Create reset_tokens table
 CREATE TABLE IF NOT EXISTS reset_tokens (
   username VARCHAR(50) PRIMARY KEY REFERENCES users(username) ON DELETE CASCADE,
@@ -44,6 +64,11 @@ EXECUTE FUNCTION update_timestamp();
 
 CREATE OR REPLACE TRIGGER update_inventory_timestamp
 BEFORE UPDATE ON inventory
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamp();
+
+CREATE OR REPLACE TRIGGER update_orders_timestamp
+BEFORE UPDATE ON orders
 FOR EACH ROW
 EXECUTE FUNCTION update_timestamp();
 
