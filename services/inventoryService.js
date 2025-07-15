@@ -1,13 +1,17 @@
 const inventoryModel = require('../models/inventoryModel');
 const messages = require('../constants/messages');
 
+exports.getItems = async (limit = 10, offset = 0, search = '') => {
+  return await inventoryModel.getItems(limit, offset, search);
+};
+
+exports.getTotalCount = async (search = '') => {
+  return await inventoryModel.getTotalCount(search);
+};
+
 exports.createItem = async (name, quantity) => {
   const item = await inventoryModel.createItem(name, quantity);
   return { message: messages.ITEM_ADDED, id: item.id };
-};
-
-exports.getItems = async () => {
-  return await inventoryModel.getItems();
 };
 
 exports.getItemById = async (id) => {

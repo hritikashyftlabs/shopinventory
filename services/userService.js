@@ -2,13 +2,17 @@ const userModel = require('../models/userModel');
 const bcrypt = require('bcryptjs');
 
 // Get all users
-exports.getAllUsers = async () => {
-  const users = await userModel.getUsers();
+exports.getAllUsers = async (limit = 10, offset = 0, search = '') => {
+  const users = await userModel.getUsers(limit, offset, search);
   // Remove passwords from response
   return users.map(user => {
     const { password, ...safeUser } = user;
     return safeUser;
   });
+};
+
+exports.getTotalCount = async (search = '') => {
+  return await userModel.getTotalCount(search);
 };
 
 // Get user by ID

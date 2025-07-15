@@ -36,9 +36,33 @@ exports.getUserById = async (id) => {
 };
 
 
-exports.getUsers = async () => {
-  const result = await db.query('SELECT * FROM users ORDER BY id');
+exports.getUsers = async (limit = 10, offset = 0, search = '') => {
+  let query = 'SELECT * FROM users';
+  const params = [];
+  
+  if (search) {
+    query += ' WHERE username ILIKE $1 OR full_name ILIKE $1 OR email ILIKE $1';
+    params.push(`%${search}%`);
+  }
+  
+  query += ' ORDER BY id LIMIT $' + (params.length + 1) + ' OFFSET $' + (params.length + 2);
+  params.push(limit, offset);
+  
+  const result = await db.query(query, params);
   return result.rows;
+};
+
+exports.getTotalCount = async (search = '') => {
+  let query = 'SELECT COUNT(*) FROM users';
+  const params = [];
+  
+  if (search) {
+    query += ' WHERE username ILIKE $1 OR full_name ILIKE $1 OR email ILIKE $1';
+    params.push(`%${search}%`);
+  }
+  
+  const result = await db.query(query, params);
+  return parseInt(result.rows[0].count);
 };
 
 exports.updateUser = async (id, updateData) => {

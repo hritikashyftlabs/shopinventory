@@ -4,8 +4,19 @@ const sendResponse = require('../utils/responseHandler');
 // Get all users (admin only)
 exports.getUsers = async (req, res) => {
   try {
-    const users = await userService.getAllUsers();
-    sendResponse(res, 200, "Users retrieved successfully", users);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const search = req.query.search || '';
+    
+    const offset = (page - 1) * limit;
+    
+    const users = await userService.getAllUsers(limit, offset, search);
+    const totalUsers = await userService.getTotalCount(search);
+    
+    sendResponse(res, 200, "Users retrieved successfully", {
+      users: users,
+      totalRecords: totalUsers,
+    });
   } catch (err) {
     sendResponse(res, 500, "Error retrieving users", { error: err.message });
   }
