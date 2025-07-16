@@ -1,32 +1,36 @@
+const inventoryModel = require('../models/inventoryModel');
+const messages = require('../constants/messages');
 
-const inventoryItems = require('../cache/inventoryCache');
-
-exports.createItem = (name, quantity) => {
-  const id = Date.now().toString(); // unique ID
-  inventoryItems.set(id, { name, quantity });
-  return { message: 'Item added', id };
+exports.getItems = async (limit = 10, offset = 0, search = '') => {
+  return await inventoryModel.getItems(limit, offset, search);
 };
 
-exports.getItems = () => {
-  const items = [];
-  for (const [id, data] of inventoryItems.entries()) {
-    items.push({ id, ...data });
-  }
-  return items;
+exports.getTotalCount = async (search = '') => {
+  return await inventoryModel.getTotalCount(search);
 };
 
-exports.updateItem = (id, name, quantity) => {
-  if (!inventoryItems.has(id)) {
-    throw new Error('Item not found');
-  }
-  inventoryItems.set(id, { name, quantity });
-  return { message: 'Item updated' };
+exports.createItem = async (name, quantity) => {
+  const item = await inventoryModel.createItem(name, quantity);
+  return { message: messages.ITEM_ADDED, id: item.id };
 };
 
-exports.deleteItem = (id) => {
-  if (!inventoryItems.has(id)) {
-    throw new Error('Item not found');
+exports.getItemById = async (id) => {
+  const item = await inventoryModel.getItemById(id);
+  if (!item) {
+    throw new Error(messages.ITEM_NOT_FOUND);
   }
-  inventoryItems.delete(id);
-  return { message: 'Item deleted' };
+  return item;
+};
+
+exports.updateItem = async (id, name, quantity) => {
+  const item = await inventoryModel.updateItem(id, name, quantity);
+  if (!item) {
+    throw new Error(messages.ITEM_NOT_FOUND);
+  }
+  return { message: messages.ITEM_UPDATED };
+};
+
+exports.deleteItem = async (id) => {
+  await inventoryModel.deleteItem(id);
+  return { message: messages.ITEM_DELETED };
 };
