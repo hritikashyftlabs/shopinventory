@@ -84,8 +84,7 @@ describe('User Service Tests', () => {
     expect(result.password).toBe(undefined); // Password should be removed
   });
 
-  // Test updateUser
-  test('updateUser should hash passwords', async () => {
+  test('update user ', async () => {
     // Setup fake user and update data
     const fakeUser = { 
       id: 3, 
