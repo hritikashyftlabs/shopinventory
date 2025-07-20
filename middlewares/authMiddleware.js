@@ -24,3 +24,12 @@ module.exports.verifyAdmin = (req, res, next) => {
     return res.status(403).json({ message: 'Forbidden: Admin only' });
   }
 };
+
+// RBAC: verifyAdminOrUser middleware (excludes customers from certain operations)
+module.exports.verifyAdminOrUser = (req, res, next) => {
+  if (req.user && (req.user.role === 'admin' || req.user.role === 'user')) {
+    next();
+  } else {
+    return res.status(403).json({ message: 'Forbidden: Admin or User only' });
+  }
+};

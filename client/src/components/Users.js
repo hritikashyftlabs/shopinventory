@@ -6,7 +6,7 @@ function Users() {
   const [newUser, setNewUser] = useState({
     username: '',
     password: '',
-    role: 'user',
+    role: 'customer',
     email: '',
     fullName: ''
   });
@@ -34,7 +34,7 @@ function Users() {
       setNewUser({
         username: '',
         password: '',
-        role: 'user',
+        role: 'customer',
         email: '',
         fullName: ''
       });
@@ -80,6 +80,7 @@ function Users() {
               value={newUser.role}
               onChange={(e) => setNewUser({...newUser, role: e.target.value})}
             >
+              <option value="customer">Customer</option>
               <option value="user">User</option>
               <option value="admin">Admin</option>
             </select>
@@ -121,7 +122,11 @@ function Users() {
             {users.map(user => (
               <tr key={user.id}>
                 <td>{user.username}</td>
-                <td>{user.role}</td>
+                <td>
+                  <span className={`role-badge role-${user.role}`}>
+                    {user.role}
+                  </span>
+                </td>
                 <td>{user.email}</td>
                 <td>{user.full_name}</td>
               </tr>

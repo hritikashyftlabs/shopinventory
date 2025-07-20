@@ -38,8 +38,35 @@ exports.createOrder = async (userId, items, totalAmount) => {
 };
 
 exports.getOrderById = async (orderId) => {
-  const result = await db.query('SELECT * FROM orders WHERE id = $1', [orderId]);
-  return result.rows[0];
+  const client = await db.connect();
+  try {
+    // Get order with user details
+    const orderResult = await client.query(`
+      SELECT o.*, u.username, u.full_name as customer_name 
+      FROM orders o 
+      LEFT JOIN users u ON o.user_id = u.id 
+      WHERE o.id = $1
+    `, [orderId]);
+    
+    if (orderResult.rows.length === 0) {
+      return null;
+    }
+    
+    const order = orderResult.rows[0];
+    
+    // Get order items with inventory details
+    const itemsResult = await client.query(`
+      SELECT oi.*, i.name as item_name 
+      FROM order_items oi 
+      LEFT JOIN inventory i ON oi.inventory_id = i.id 
+      WHERE oi.order_id = $1
+    `, [orderId]);
+    
+    order.items = itemsResult.rows;
+    return order;
+  } finally {
+    client.release();
+  }
 };
 
 exports.updateOrderStatus = async (orderId, status) => {
@@ -57,15 +84,19 @@ exports.deleteOrder = async (orderId) => {
 
 exports.getAllOrders = async (page, limit, status) => {
   const offset = (page - 1) * limit;
-  let query = 'SELECT * FROM orders';
+  let query = `
+    SELECT o.*, u.username, u.full_name as customer_name 
+    FROM orders o 
+    LEFT JOIN users u ON o.user_id = u.id
+  `;
   let params = [];
   
   if (status) {
-    query += ' WHERE status = $1';
+    query += ' WHERE o.status = $1';
     params.push(status);
   }
   
-  query += ` ORDER BY created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+  query += ` ORDER BY o.created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
   params.push(limit, offset);
   
   const result = await db.query(query, params);
@@ -74,10 +105,14 @@ exports.getAllOrders = async (page, limit, status) => {
 
 exports.getOrdersByUserId = async (userId, page, limit) => {
   const offset = (page - 1) * limit;
-  const result = await db.query(
-    'SELECT * FROM orders WHERE user_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3',
-    [userId, limit, offset]
-  );
+  const result = await db.query(`
+    SELECT o.*, u.username, u.full_name as customer_name 
+    FROM orders o 
+    LEFT JOIN users u ON o.user_id = u.id 
+    WHERE o.user_id = $1 
+    ORDER BY o.created_at DESC 
+    LIMIT $2 OFFSET $3
+  `, [userId, limit, offset]);
   return { orders: result.rows, totalRecords: result.rowCount };
 };
 

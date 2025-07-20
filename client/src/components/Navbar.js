@@ -10,12 +10,15 @@ function Navbar() {
       <div className="navbar-brand">Shop Inventory</div>
       <div className="navbar-nav">
         <Link to="/dashboard">Dashboard</Link>
-        <Link to="/inventory">Inventory</Link>
+        {(user?.role === 'admin' || user?.role === 'user') && (
+          <Link to="/inventory">Inventory</Link>
+        )}
+        <Link to="/orders">Orders</Link>
         {user?.role === 'admin' && (
           <Link to="/users">Users</Link>
         )}
         <div className="navbar-user">
-          <span>Welcome, {user?.username}</span>
+          <span>Welcome, {user?.username} ({user?.role})</span>
           <button className="btn btn-danger" onClick={logout}>Logout</button>
         </div>
       </div>
