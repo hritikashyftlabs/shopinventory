@@ -37,7 +37,9 @@ exports.getUserById = async (id) => {
 
 
 exports.getUsers = async () => {
-  const result = await db.query('SELECT * FROM users ORDER BY id');
+  const result = await db.query(
+    'SELECT id, username, role, email, full_name, created_at FROM users ORDER BY created_at DESC'
+  );
   return result.rows;
 };
 

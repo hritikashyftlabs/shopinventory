@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -7,6 +8,7 @@ function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,8 +16,12 @@ function Login() {
     setLoading(true);
 
     try {
-      await login(username, password);
+      const result = await login(username, password);
+      console.log('Login successful:', result);
+      // Force navigation after successful login
+      navigate('/dashboard');
     } catch (error) {
+      console.error('Login failed:', error);
       setError(error.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);
