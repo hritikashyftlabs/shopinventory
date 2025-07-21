@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -33,7 +33,7 @@ function Login() {
       <div className="login-container">
         <div className="login-header">
           <div className="logo">
-            <h1> Shop Inventory</h1>
+            <h1>Shop Inventory</h1>
           </div>
         </div>
         
@@ -79,6 +79,9 @@ function Login() {
                   className={error ? 'input-error' : ''}
                 />
               </div>
+              <div className="forgot-password">
+                <Link to="/forgot-password">Forgot password?</Link>
+              </div>
             </div>
             
             <button 
@@ -96,9 +99,13 @@ function Login() {
               )}
             </button>
           </form>
-            </div>
+          
+          <div className="register-link">
+            Don't have an account? <Link to="/register">Register now</Link>
           </div>
         </div>
+      </div>
+    </div>
   );
 }
 
