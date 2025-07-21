@@ -75,14 +75,14 @@ function ForgotPassword() {
           
           {error && (
             <div className="error-alert">
-              <span className="error-icon">⚠️</span>
+              <span className="error-icon"></span>
               {error}
             </div>
           )}
           
           {message && (
             <div className="success-alert">
-              <span className="success-icon">✅</span>
+              <span className="success-icon"></span>
               {message}
             </div>
           )}
@@ -124,7 +124,7 @@ function ForgotPassword() {
               <div className="input-group">
                 <label htmlFor="resetToken">Reset Token</label>
                 <div className="input-wrapper">
-                  <span className="input-icon">🔑</span>
+                  <span className="input-icon"></span>
                   <input
                     id="resetToken"
                     type="text"
@@ -139,7 +139,7 @@ function ForgotPassword() {
               <div className="input-group">
                 <label htmlFor="newPassword">New Password</label>
                 <div className="input-wrapper">
-                  <span className="input-icon">🔒</span>
+                  <span className="input-icon"></span>
                   <input
                     id="newPassword"
                     type="password"
@@ -154,7 +154,7 @@ function ForgotPassword() {
               <div className="input-group">
                 <label htmlFor="confirmPassword">Confirm Password</label>
                 <div className="input-wrapper">
-                  <span className="input-icon">🔒</span>
+                  <span className="input-icon"></span>
                   <input
                     id="confirmPassword"
                     type="password"
