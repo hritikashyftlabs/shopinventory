@@ -34,7 +34,6 @@ function Login() {
         <div className="login-header">
           <div className="logo">
             <h1> Shop Inventory</h1>
-            <p>Professional Inventory Management System</p>
           </div>
         </div>
         
@@ -97,17 +96,9 @@ function Login() {
               )}
             </button>
           </form>
-          
-          <div className="login-footer">
-            <p>Demo Accounts:</p>
-            <div className="demo-accounts">
-              <span className="demo-badge admin">Admin: admin/admin123</span>
-              <span className="demo-badge customer">Customer: customer1/password123</span>
             </div>
           </div>
         </div>
-      </div>
-    </div>
   );
 }
 

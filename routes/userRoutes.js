@@ -16,7 +16,7 @@ router.get('/profile', authMiddleware, (req, res) => {
 });
 
 // Get all users (admin only)
-router.get('/', authMiddleware, userController.getUsers);
+router.get('/', authMiddleware, authMiddleware.verifyAdmin, userController.getUsers);
 
 // Get user by ID
 router.get('/:id', authMiddleware, userController.getUserById);

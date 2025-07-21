@@ -27,8 +27,8 @@ exports.getSingleItem = async (req, res) => {
 
 exports.createItem = async (req, res) => {
   try {
-    const { name, quantity } = req.body;
-    const item = await Inventory.createItem(name, quantity);
+    const { name, quantity, price } = req.body;
+    const item = await Inventory.createItem(name, quantity, price || 0);
     sendResponse(res, 201, "Item created successfully", item);
   } catch (err) {
     sendResponse(res, 400, "Error creating item", { error: err.message });
@@ -38,8 +38,8 @@ exports.createItem = async (req, res) => {
 exports.updateItem = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, quantity } = req.body;
-    const item = await Inventory.updateItem(id, name, quantity);
+    const { name, quantity, price } = req.body;
+    const item = await Inventory.updateItem(id, name, quantity, price || 0);
     if (!item) {
       return sendResponse(res, 404, "Item not found", {});
     }

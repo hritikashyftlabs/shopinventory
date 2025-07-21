@@ -3,7 +3,7 @@ import axios from 'axios';
 
 function Inventory() {
   const [items, setItems] = useState([]);
-  const [newItem, setNewItem] = useState({ name: '', quantity: '' });
+  const [newItem, setNewItem] = useState({ name: '', quantity: '', price: '' });
   const [editingItem, setEditingItem] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -26,7 +26,7 @@ function Inventory() {
     setLoading(true);
     try {
       await axios.post('/api/inventory', newItem);
-      setNewItem({ name: '', quantity: '' });
+      setNewItem({ name: '', quantity: '', price: '' });
       setMessage('Item added successfully');
       fetchItems();
     } catch (error) {
@@ -75,6 +75,17 @@ function Inventory() {
               required
             />
           </div>
+          <div className="form-group">
+            <label>Price:</label>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              value={newItem.price}
+              onChange={(e) => setNewItem({...newItem, price: e.target.value})}
+              required
+            />
+          </div>
           <button type="submit" className="btn btn-primary" disabled={loading}>
             {loading ? 'Adding...' : 'Add Item'}
           </button>
@@ -88,6 +99,7 @@ function Inventory() {
             <tr>
               <th>Name</th>
               <th>Quantity</th>
+              <th>Price</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -96,6 +108,7 @@ function Inventory() {
               <tr key={item.id}>
                 <td>{item.name}</td>
                 <td>{item.quantity}</td>
+                <td>${item.price || '0.00'}</td>
                 <td>
                   <button 
                     className="btn btn-danger"

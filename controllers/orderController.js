@@ -4,13 +4,23 @@ const sendResponse = require('../utils/responseHandler');
 
 exports.createOrder = async (req, res) => {
   try {
+    console.log('Order creation request:', req.body);
     const { items } = req.body;
     const userId = req.user.id;
     
+    // Validate request data
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      console.log('Validation failed: Items array is required');
+      return sendResponse(res, 400, "Items array is required", {});
+    }
+    
+    console.log('Creating order for user:', userId, 'with items:', items);
     const order = await orderService.createOrder(userId, items);
+    console.log('Order created successfully:', order);
     sendResponse(res, 201, "Order created successfully", order);
   } catch (error) {
-    sendResponse(res, 400, "Error creating order", { error: error.message });
+    console.error('Order creation error:', error);
+    sendResponse(res, 400, error.message, { error: error.message });
   }
 };
 

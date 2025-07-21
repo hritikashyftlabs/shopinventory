@@ -34,9 +34,11 @@ function Orders() {
   const fetchInventoryItems = async () => {
     try {
       const response = await axios.get('/api/inventory');
+      console.log('Fetched inventory items:', response.data.data);
       setInventoryItems(response.data.data || []);
     } catch (error) {
       console.error('Error fetching inventory:', error);
+      setMessage('Error fetching inventory items');
     }
   };
 
@@ -54,13 +56,30 @@ function Orders() {
 
   const handleOrderItemChange = (index, field, value) => {
     const items = [...newOrder.items];
-    items[index][field] = value;
+    
+    if (field === 'quantity') {
+      const numValue = parseInt(value);
+      if (isNaN(numValue) || numValue < 1) {
+        items[index][field] = 1;
+      } else {
+        items[index][field] = numValue;
+      }
+    } else if (field === 'price') {
+      const numValue = parseFloat(value);
+      if (isNaN(numValue) || numValue < 0) {
+        items[index][field] = 0;
+      } else {
+        items[index][field] = numValue;
+      }
+    } else {
+      items[index][field] = value;
+    }
     
     // Auto-fill price when inventory item is selected
-    if (field === 'inventory_id') {
+    if (field === 'inventory_id' && value) {
       const selectedItem = inventoryItems.find(item => item.id === parseInt(value));
-      if (selectedItem) {
-        items[index].price = selectedItem.price || 0;
+      if (selectedItem && selectedItem.price > 0) {
+        items[index].price = selectedItem.price;
       }
     }
     
@@ -70,15 +89,58 @@ function Orders() {
   const handleCreateOrder = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setMessage('');
+    
     try {
-      await axios.post('/api/orders', newOrder);
+      console.log('Creating order with items:', newOrder.items);
+      
+      // Validate order before sending
+      const validItems = newOrder.items.filter(item => {
+        const hasInventoryId = item.inventory_id && item.inventory_id !== '';
+        const hasQuantity = item.quantity && parseInt(item.quantity) > 0;
+        const hasPrice = item.price && parseFloat(item.price) > 0;
+        
+        console.log('Item validation:', {
+          item,
+          hasInventoryId,
+          hasQuantity,
+          hasPrice
+        });
+        
+        return hasInventoryId && hasQuantity && hasPrice;
+      });
+      
+      console.log('Valid items:', validItems);
+      
+      if (validItems.length === 0) {
+        throw new Error('Please add at least one valid item with inventory selection, quantity > 0, and price > 0');
+      }
+      
+      const orderData = {
+        items: validItems.map(item => ({
+          inventory_id: parseInt(item.inventory_id),
+          quantity: parseInt(item.quantity),
+          price: parseFloat(item.price)
+        }))
+      };
+      
+      console.log('Sending order data:', orderData);
+      
+      const response = await axios.post('/api/orders', orderData);
+      console.log('Order response:', response.data);
+      
       setNewOrder({
         items: [{ inventory_id: '', quantity: 1, price: 0 }]
       });
       setMessage('Order created successfully');
       fetchOrders();
     } catch (error) {
-      setMessage(error.response?.data?.message || 'Error creating order');
+      console.error('Order creation error:', error);
+      const errorMessage = error.response?.data?.message || 
+                          error.response?.data?.error || 
+                          error.message || 
+                          'Error creating order';
+      setMessage(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -195,7 +257,7 @@ function Orders() {
               <th>Total Amount</th>
               <th>Status</th>
               <th>Created At</th>
-              {user.role === 'admin' && <th>Actions</th>}
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>

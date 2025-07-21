@@ -15,7 +15,7 @@ class Database {
       host: process.env.DB_HOST,
       database: process.env.DB_NAME,
       password: process.env.DB_PASSWORD,
-      port: process.env.DBð_PORT
+      port: process.env.DB_PORT
     });
 
     this.pool.on('connect', () => {
@@ -31,6 +31,11 @@ class Database {
 
   query(text, params) {
     return this.pool.query(text, params);
+  }
+
+  // Add connect method for transactions
+  connect() {
+    return this.pool.connect();
   }
 
   getPool() {

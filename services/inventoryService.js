@@ -1,7 +1,7 @@
 const inventoryModel = require('../models/inventoryModel');
 
-exports.createItem = async (name, quantity) => {
-  const item = await inventoryModel.createItem(name, quantity);
+exports.createItem = async (name, quantity, price = 0) => {
+  const item = await inventoryModel.createItem(name, quantity, price);
   return { message: 'Item added', id: item.id };
 };
 
@@ -17,8 +17,8 @@ exports.getItemById = async (id) => {
   return item;
 };
 
-exports.updateItem = async (id, name, quantity) => {
-  const item = await inventoryModel.updateItem(id, name, quantity);
+exports.updateItem = async (id, name, quantity, price = 0) => {
+  const item = await inventoryModel.updateItem(id, name, quantity, price);
   if (!item) {
     throw new Error('Item not found');
   }
